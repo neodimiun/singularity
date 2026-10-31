@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Learn more &middot; Singularity Tracker</title>
+<meta name="description" content="Methods, series status, definitions, sources and build details for the Singularity Tracker.">
+<meta name="color-scheme" content="light dark">
+<script>
+  // Apply a stored theme before first paint. Storage may be unavailable.
+  (function () {
+    try {
+      var t = window.localStorage.getItem('st-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* ignore */ }
+    // uPlot formats numbers with navigator.language; some systems report an
+    // invalid tag (e.g. "en-US@posix"), which would stop the charts loading.
+    try { new Intl.NumberFormat(navigator.language); } catch (e) {
+      try { Object.defineProperty(navigator, 'language', { value: 'en-US', configurable: true }); } catch (e2) { /* ignore */ }
+    }
+  })();
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <h1><a class="home-link" href="./">Singularity Tracker</a></h1>
+    <button id="theme-toggle" class="btn theme-toggle" type="button" aria-pressed="false" hidden>Dark mode</button>
+  </div>
+</header>
+
+<main id="main" class="wrap learn">
+  <p class="back"><a href="./">&larr; Back to the charts</a></p>
+  <p class="lede lede-short">Is AI progress speeding up toward a finite-time &ldquo;singularity&rdquo;, or growing at a
+    steady exponential rate?</p>
+
+  <div class="banner banner-compact" role="note">
+    <svg class="banner-icon" viewBox="0 0 20 20" aria-hidden="true" focusable="false"><circle cx="10" cy="10" r="8.5" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M10 5.5v5.5M10 13.6v.9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <p><strong class="banner-title">No approved end date for any series.</strong>
+      <span class="banner-sub">No series has passed the project&rsquo;s finite-date rule (<a href="#methods">Methods</a>,
+        <a href="#status">Series status</a>).</span></p>
+  </div>
+
+  <nav class="jump" aria-label="On this page">
+    <a href="#guide">Charts in plain language</a> &middot; <a href="#omega">Omega point</a> &middot; <a href="#status">Series status</a> &middot; <a href="#methods">Methods</a>
+    &middot; <a href="#main-chart">Main chart</a> &middot; <a href="#tables">Chart notes</a> &middot; <a href="#sources">Sources</a>
+  </nav>
+
+  <section id="guide" aria-labelledby="h-guide">
+    <h2 id="h-guide">The charts in plain language</h2>
+    <p data-awaiting-skeptic="true">Each section below covers one chart from the main page, in reading order: what it shows, what it does not show and where the numbers come from.</p>
+    <h3 id="g-card">The date card at the top</h3>
+    <p data-awaiting-skeptic="true">This site uses the omega point to mean the technological singularity: the arrival of artificial superintelligence (ASI). The card shows where the best-fit curve lands if the speed-up continues, as a fitted estimate.</p>
+    <p data-awaiting-skeptic="true">That single date is a fitted estimate, not a forecast and not an approved date. The same fixed method is refit every week on one list, the hand-picked models its range was calibrated on, so the card shows the same date whichever list the chart shows. <a href="#omega">How the card is built</a>.</p>
+    <p data-awaiting-skeptic="true">Below the date is the calibrated 50% range (provisional). It comes from the rolling backtest, which checks how far off this method's earlier dates were against later data. It is in-sample (measured on the same history it was fit to), so treat it as a rough guide. In 24 of the 31 held-out tests the real wait was longer than the curve said, so this method tends to name dates too early, and the range is not centred on where its errors fall. The 80% band in the tooltip is not calibrated. Neither the card nor its tooltip shows the fit's own claimed 95% range: that comes only from the curve's arithmetic and has not been shown to hold up. Each past refit's claimed 95% range appears only in the track record, as a past claim.</p>
+    <p data-awaiting-skeptic="true">The line under the date gives the days to the omega point, and the same count at the previous refit, measured on that refit's own day. It says the date keeps moving away when the date moved later by at least as much time as passed between the two refits. A number marked (recomputed) is a backtest: today's method and list rerun on the data up to that day, not what the site showed then.</p>
+    <ul class="track-sum" data-awaiting-skeptic="true"><li><b>Old chart&#x27;s 11 picks · calendar refits</b>: claimed &plusmn;173% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 97 refits); realised: the date moved 5.0% of it per refit (median of 96 refit intervals, median spacing 7 days); r = 1.39 [1.22, 1.56] days later per day that passed (97 unpinned of 97 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>Old chart&#x27;s 11 picks · release cuts</b>: claimed &plusmn;123% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 5 refits); realised: the date moved 49.7% of it per refit (median of 4 refit intervals, median spacing 78 days); r = 1.77 [1.01, 2.52] days later per day that passed (5 unpinned of 5 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>41 picks · calendar refits</b>: claimed &plusmn;107% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 97 refits); realised: the date moved 9.5% of it per refit (median of 96 refit intervals, median spacing 7 days); r = 1.09 [1.00, 1.17] days later per day that passed (97 unpinned of 97 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>41 picks · release cuts</b>: claimed &plusmn;104% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 31 refits); realised: the date moved 30.1% of it per refit (median of 30 refit intervals, median spacing 16 days); r = 1.12 [0.99, 1.25] days later per day that passed (31 unpinned of 31 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li></ul>
+    <h3 id="g-hero">The main chart (Kurzweil&#x27;s milestones and AI models)</h3>
+    <p data-awaiting-skeptic="true">The main chart plots the wait until the next event against how long ago each event happened, on log scales. Purple rings show Kurzweil's milestones (all estimates). Cyan points show the AI models from the list you pick with the switch.</p>
+    <p data-awaiting-skeptic="true">The amber best-fit curve (a quadratic on the log-log chart) runs through Kurzweil's milestones and the picks toward the card's date. Zoom in past today and it turns dashed, carrying the same curve forward to ask what happens if the speed-up continues. It runs down to the omega point, where the fitted wait runs out, inside a shaded band showing the 50% range (provisional). It is a fitted estimate, not a forecast, refit every week.</p>
+    <p data-awaiting-skeptic="true">The approved verdict, word for word: &ldquo;artifact of the chart&#x27;s construction; fails the held-out test; AI-only fit gives no near-term date&rdquo; (status of <code>curated_release_lists</code>, approved in #25). <a href="#status">Series status</a>.</p>
+    <p data-awaiting-skeptic="true">About the lists: On the hand-picked lists, people chose which models count. The lists hold only names, dates and gaps, with nothing fitted. Switching lists shows how much the picture depends on which models count. The lists on the switch: Old chart&#x27;s 11 picks; 41 picks.</p>
+    <p data-awaiting-skeptic="true"><a href="https://x.com/geogristle/status/2105113398774211025">Original chart: Geogristle (@geogristle) on X, 29 Sep 2026</a>. Our chart is redrawn from repo data: it tests the post&rsquo;s method and does not copy the post.</p>
+    <h3 id="g-deep">The timeline strip</h3>
+    <p data-awaiting-skeptic="true">A narrow map of the full timeline sits under the main chart. The box shows your current view; drag or tap the strip to move the main chart. It adds no data of its own.</p>
+    <h3 id="g-timewave">The McKenna panel</h3>
+    <p data-awaiting-skeptic="true">A formula, not data. It draws Terence McKenna's timewave on its own fixed scale; nothing on it was measured, and it says nothing about the AI series. You can end it on the card's omega point (a fitted estimate) or on McKenna's own 2012 date. Filled marks are the formula's upcoming lows; hollow marks are its past lows with the same end date, so you can hold them against what happened then. Lining lows up with events by eye is not a test: with enough events, some always line up. Pinch or scroll to zoom in and hunt for dates; the line under the chart gives the span in view, the way McKenna titled his graphs. Sources and the number set are in <a href="#timewave">the McKenna panel note</a> and <a href="#sources">Sources</a>.</p>
+    <h3 id="g-steps">The steps chart</h3>
+    <p data-awaiting-skeptic="true">The steps chart draws the same waits as a staircase, showing all three lists at once: Kurzweil's milestones (estimates), every model release (by rule, from the 11 labs; nobody picks) and the hand-picked models chosen in the main chart. Each step spans from one event to the next on its list, and its height is that wait: lower steps mean shorter waits. Hollow marks are estimates or upper bounds. Buttons show or hide each list.</p>
+    <p data-awaiting-skeptic="true">The drop where Kurzweil's milestones meet the AI releases comes from switching lists, not from a measured speed-up. Zoomed in past today, it shows the two registered test windows, the 50% range (provisional) and the omega point (a fitted estimate). It draws no best-fit curve: the steps are the data, and the curve is on the main chart.</p>
+    <h3 id="g-track">The track record of the date</h3>
+    <p data-awaiting-skeptic="true">Each row shows one refit of the same fixed method on the list you pick: from the refit day to the fitted estimate it named then, with the 95% range the fit claimed at that refit (a past claim, not the card's range). Hollow points are dates that have already passed (failed forecasts). The track record shows whether the named date held still or kept moving. <a href="#omega">Method and summaries</a>.</p>
+    <h3 id="g-calendar">Time between a lab&#x27;s new models</h3>
+    <p data-awaiting-skeptic="true">The calendar view plots the average wait between new AI models from the 11 labs, with a per-lab view (the default) and an all-labs-combined view. Placeholder names mark the biggest drops; they are not final names. After today it shows the two registered CVE test windows and the omega band (a fitted estimate). <a href="#tests">The registered tests</a>.</p>
+    <h3 id="g-releases">Model releases from 11 labs</h3>
+    <p data-awaiting-skeptic="true">Counts of non-minor releases per quarter and every release by lab. Recent counts are lower bounds because the source adds entries late. Observed counts only. <a href="#tables">Chart notes and tables</a>.</p>
+    <h3 id="g-compute">Computing power to train record-setting AI models</h3>
+    <p data-awaiting-skeptic="true">Each point is a model that used more training compute than every earlier one. Hollow points are lower bounds. Observed values only. <a href="#tables">Chart notes and tables</a>.</p>
+    <h3 id="g-arxiv-monthly">New AI and computer-science papers per month (arXiv)</h3>
+    <p data-awaiting-skeptic="true">New papers in the chart's AI categories per month, against all computer-science papers, which is the control for overall volume. Observed counts only. <a href="#tables">Chart notes and tables</a>.</p>
+    <h3 id="g-cve-monthly">Reported software security flaws per month (CVE)</h3>
+    <p data-awaiting-skeptic="true">Published vulnerability records per month, with views that leave out the biggest bulk assigners. Observed counts only. <a href="#tables">Chart notes and tables</a>.</p>
+    <h3 id="g-arxiv-daily">New AI and computer-science papers per day (arXiv, recent)</h3>
+    <p data-awaiting-skeptic="true">The same papers by day. The last few days undercount because a paper appears only after arXiv announces it. <a href="#tables">Chart notes and tables</a>.</p>
+    <h3 id="g-cve-daily">Reported software security flaws per day (CVE, recent)</h3>
+    <p data-awaiting-skeptic="true">The same records by day for the recent past. The newest day may be incomplete. <a href="#tables">Chart notes and tables</a>.</p>
+  </section>
+
+  <section id="omega" aria-labelledby="h-omega">
+    <h2 id="h-omega">The omega-point date and its track record</h2>
+    <p data-awaiting-skeptic="true">The card at the top of the main page shows the latest refit for one list, the reference list its 50% range was calibrated on, whatever list the chart shows: the date the fit names and its 50% range. The fit (owner&#x27;s decision, #80) is a curve on the log-log chart: the log of each wait is a quadratic in the log of the time left until the omega point, through Kurzweil&#x27;s milestones and the picks together, and the date is the one where that curve fits the points best (the least squared error, which is the highest R²; the time since the last release counts as a lower bound). The curve bends down to zero wait at that date. It replaced the viral chart&#x27;s straight line: on the rolling held-out test (predict each next gap from the releases before it) its mean error is smaller than the straight line&#x27;s, though the plain exponential, which names no date, is still better (see the held-out table below). That range is the list&#x27;s last release before the refit plus the time the fit said remained, times the 50% band of the quadratic&#x27;s rolling backtest held-out errors (results/predictions/part8_rd_quad.json, calibrated_range.json, #40). It is symmetric about the named date in log remaining time, so the date does not move inside it. With no range (a fit pinned to the start of its search grid, or no calibrated band) the card shows the named date alone; a fit pinned to the far edge of its grid shows no date. The range is provisional and in-sample; its tooltip also gives an 80% range, which is not calibrated. The card does not show the fit&#x27;s own claimed 95% range: each past refit&#x27;s claim is shown in the track-record panel as a past claim. The line under the date gives the days from the build date to the omega point, and the same count at the previous refit measured on that refit&#x27;s own day; its verdict compares the two refits&#x27; own counts, and a number marked (recomputed) is a backtest, not what the site showed then. How many of the past estimates have already gone by (calendar refits whose named date is before the build date) is listed below for each list.</p>
+    <p data-awaiting-skeptic="true">The card’s date was refit on the Oct 22 list of 39 picks; the list has since gained picks and is now labelled 41 picks.</p>
+    <p>Past estimates that have already gone by: Old chart&#x27;s 11 picks · calendar refits: 58 of 97; 41 picks · calendar refits: 77 of 97.</p>
+    <p class="lt-caption" id="learn-track-caption">Fitted estimates, updated weekly</p>
+    <p data-awaiting-skeptic="true">Each row is one refit of the same fixed method on the selected list of hand-picked models: the date the fit named then (a fitted estimate) and the 95% range it claimed at that refit (a past claim, not the card&#x27;s range). Hollow points mark dates that have passed (failed forecasts). These dates form a track record, not a forecast; each series&#x27; verdict is the status label in the Series status section of the Learn page.</p>
+    <ul class="track-sum"><li><b>Old chart&#x27;s 11 picks · calendar refits</b>: claimed &plusmn;173% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 97 refits); realised: the date moved 5.0% of it per refit (median of 96 refit intervals, median spacing 7 days); r = 1.39 [1.22, 1.56] days later per day that passed (97 unpinned of 97 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>Old chart&#x27;s 11 picks · release cuts</b>: claimed &plusmn;123% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 5 refits); realised: the date moved 49.7% of it per refit (median of 4 refit intervals, median spacing 78 days); r = 1.77 [1.01, 2.52] days later per day that passed (5 unpinned of 5 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>41 picks · calendar refits</b>: claimed &plusmn;107% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 97 refits); realised: the date moved 9.5% of it per refit (median of 96 refit intervals, median spacing 7 days); r = 1.09 [1.00, 1.17] days later per day that passed (97 unpinned of 97 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li><li><b>41 picks · release cuts</b>: claimed &plusmn;104% of the time the fit said remained (median half-width of the 95% range claimed at each refit, past claims, 31 refits); realised: the date moved 30.1% of it per refit (median of 30 refit intervals, median spacing 16 days); r = 1.12 [0.99, 1.25] days later per day that passed (31 unpinned of 31 refits; Newey-West HAC, Bartlett kernel, lag ceil(sqrt(n)), n/(n-2) factor, t(n-2) 95%).</li></ul>
+    <p>Only registry rows whose display_approved_pr is set are copied. For this panel that is the owner&#x27;s waiver of 2026-10-24 (Jose, issue #31) and, for the quadratic fit shown since, the owner&#x27;s decision in #80: the dates are fitted estimates shown before skeptic-red-team has reviewed them, and none of them is an approved end date. Every other fitted date, the straight line&#x27;s included, stays in the registry as a log of unapproved dates (R-a). passed = the named date is before today (2026-10-31, the build date). A fitted date that has passed is a failed forecast (R-b.1): drawn hollow. claimed_halfwidth_pct = half the 95% range that refit claimed (a past claim) as a percentage of the time the fit said remained (named date minus refit date); null when the fit is pinned to a grid edge or the range is unbounded above. moved_next_pct = how far the named date moved by the next refit shown here, as a percentage of the time the fit said remained (the owner&#x27;s &#x27;% error&#x27;); moved_latest_pct = the same against the latest refit shown; null when either fit is pinned. ai_only = the AI-only fit at the same cut (no Kurzweil points): only whether its range is bounded and whether it is pinned to a grid edge are copied, never its date. summaries: results/predictions/recession.csv for the same list and method, over every refit in the registry, not only the ones shown (r = days the named date moved per day that passed, unpinned refits only; NA if fewer than 5).</p>
+    <p>Methods: calendar: refit at a calendar date with the releases dated before it; the open gap since the last release is a censored lower bound; the curve is quadratic in the log of the time left (since #80; the part7/part8 headline method was the straight line); release cut: refit the day after each listed release (part8&#x27;s held-out loop).</p>
+    <p class="note">Source: <code>results/predictions/registry.csv</code> (rows approved for display in #80); summaries from <code>results/predictions/recession.csv</code>.</p>
+  </section>
+
+  <section id="status" aria-labelledby="h-status">
+    <h2 id="h-status">Series status</h2>
+    <div class="table-wrap status-wrap" role="region" aria-labelledby="h-status" tabindex="0">
+      <table class="status-table">
+        <caption class="visually-hidden">Status label, verdict rung, power note and approval for each series</caption>
+        <thead>
+          <tr><th scope="col">Series</th><th scope="col">Status label</th><th scope="col">Rung</th><th scope="col">Power note</th><th scope="col">Approval</th></tr>
+        </thead>
+        <tbody>
+<tr><th scope="row" data-label="Series">Curated release lists (v1, v3, v3b, v4)</th><td data-label="Label">artifact of the chart&#x27;s construction; fails the held-out test; AI-only fit gives no near-term date</td><td data-label="Rung"><span class="rung" title="Retired">R</span> <span class="rung-name">Retired</span></td><td data-label="Power note"><span class="muted">Not yet reported</span></td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">11-lab release rate (rule-defined)</th><td data-label="Label">Q1-Q3 2026 up 12% on 2024 by models, 55% by release days; whether this is acceleration depends on the counting rule, and 2026 is a lower bound.</td><td data-label="Rung"><span class="rung" title="Undetermined">U</span> <span class="rung-name">Undetermined</span></td><td data-label="Power note">finite date not detectable by this test</td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">CVE records published per month</th><td data-label="Label">accelerating, no credible finite date</td><td data-label="Rung"><span class="rung" title="Super-exponential with no credible finite date">3</span> <span class="rung-name">Super-exponential with no credible finite date</span></td><td data-label="Power note">power under R-d: pending #11</td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">arXiv cs.AI / cs.LG submissions</th><td data-label="Label">growing fast (~40-55%/yr), not accelerating once relabeling is accounted for, no credible finite date</td><td data-label="Rung"><span class="rung" title="Exponential">2</span> <span class="rung-name">Exponential</span></td><td data-label="Power note">power under R-d: pending #11</td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">Frontier training compute (record-setters)</th><td data-label="Label">fast exponential (~5-6 month doubling), not accelerating, no credible finite date; recent-year counts a lower bound due to Epoch lag</td><td data-label="Rung"><span class="rung" title="Exponential">2</span> <span class="rung-name">Exponential</span></td><td data-label="Power note">power under R-d: pending #11</td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">Capital events vs release cadence</th><td data-label="Label">no detectable capital effect, underpowered (3 labs, overlapping windows)</td><td data-label="Rung"><span class="rung" title="not on the ladder">—</span> <span class="rung-name">not on the ladder</span></td><td data-label="Power note"><span class="muted">Not yet reported</span></td><td data-label="Approval">Approved in #25</td></tr>
+<tr><th scope="row" data-label="Series">Frontier capability</th><td data-label="Label">not yet measured</td><td data-label="Rung"><span class="rung" title="Not yet tested">0</span> <span class="rung-name">Not yet tested</span></td><td data-label="Power note"><span class="muted">Not yet reported</span></td><td data-label="Approval">Approved in #25</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Labels source: <code class="path">results/dashboard_data.json</code>.</p>
+    <details class="legend-details">
+      <summary>Verdict ladder (rungs)</summary>
+      <ul class="rung-legend">
+<li><span class="rung">0</span> Not yet tested</li>
+<li><span class="rung">U</span> Undetermined</li>
+<li><span class="rung">1</span> Saturating</li>
+<li><span class="rung">2</span> Exponential</li>
+<li><span class="rung">3</span> Super-exponential with no credible finite date</li>
+<li><span class="rung">4</span> Finite-date candidate (needs Skeptic approval)</li>
+<li><span class="rung">5</span> Confirmed</li>
+<li><span class="rung">R</span> Retired</li>
+<li><span class="rung">—</span> No rung assigned (not a growth series)</li>
+      </ul>
+    </details>
+  </section>
+
+  <section id="methods" aria-labelledby="h-methods">
+    <h2 id="h-methods">Methods</h2>
+    <p>This tracker tests whether four public series (CVE records, arXiv AI papers, 11-lab model releases and
+    record-setting training compute) curve toward a finite-time &ldquo;singularity&rdquo; blow-up or follow steady
+    exponential growth. Supporting charts show observed counts only. The main chart adds Kurzweil&rsquo;s milestones
+    (estimates), McKenna&rsquo;s timewave (a formula, not data), two registered post-today CVE tests and the omega-point
+    track record (also shown on the top date card and the calendar view): fitted estimates of
+    where the fixed method pointed at each refit <span data-awaiting-skeptic="true">(with the 95% range each claimed then, a past claim)</span>, not a forecast.</p>
+    <p>Each series is tested against a constant-doubling exponential baseline on held-out future points, plus rolling
+    backtests across earlier cutoffs to see whether implied dates hold still or slide with the calendar. Passing the
+    finite-date rule requires a faster-than-exponential fit to beat all non-singular baselines (exponential and
+    quadratic-in-log) out-of-sample, hold a bounded 95% range clear of grid edges, remain unpassed (passed dates are
+    failed forecasts) and pass skeptic-red-team PR review. No series has passed. The omega-point track record shows
+    fitted estimates not yet reviewed by our skeptic agent (owner decision, 2026-10-24), not a
+    forecast. All other panels show observed counts and status labels only.</p>
+  </section>
+
+  <section id="main-chart" aria-labelledby="h-main">
+    <h2 id="h-main">The main chart, explained</h2>
+    <p class="learn-sub"><strong>The main chart.</strong> Kurzweil&rsquo;s milestones drive the curve; AI models alone point to no
+      near-term date. <span class="pending-tag">Pending skeptic review</span></p>
+    <p><a href="https://x.com/geogristle/status/2105113398774211025">Original chart: Geogristle (@geogristle) on X, 29 Sep 2026</a>. Our chart is redrawn from repo data: it tests the post&rsquo;s method and does not copy the post.</p>
+    <h3 id="heldout">Held-out test</h3>
+    <div id="learn-heldout" class="learn-notes"><p>Loading&hellip;</p></div>
+    <h3 id="tests">Calendar view: the registered tests</h3>
+        <p class="lt-head"><b>After today: no observed data, only two registered two-sided tests on CVE security-flaw counts and the omega band (a fitted estimate).</b> CVE records are public reports of software security flaws.</p>
+        <ul class="lt-list">
+          <li class="lt-item" data-registered-test="test1"><span class="lt-k">Test 1 &middot; Oct 24–31, 2026 (unobserved):</span> &lt; 4,741 CVEs refutes hyp 2023-01 &amp; hyp 2024-07. &ge; 4,741 keeps both and refutes non-singular models with upper 95% bounds below count; that approves no date.</li>
+          <li class="lt-item" data-registered-test="test2"><span class="lt-k">Test 2 &middot; November 2026 (unobserved):</span> &lt; 27,986 refutes all hyperbolas; 27,986–31,975 inconclusive. &ge; 31,975 refutes non-singular models (exp, quad, kink, step, logistic) with upper 95% bounds below count (approves no date). Any November count refutes hyp 2023-01 &amp; hyp 2024-07.</li>
+        </ul>
+    <h3 id="timewave">McKenna panel</h3>
+    <p class="lt-cap"><b>McKenna&#x27;s timewave (a formula, not data).</b> Terence &amp; Dennis McKenna&#x27;s King Wen &quot;novelty&quot; curve (<em>The Invisible Landscape</em>, 1975; Kelley set, Peter Meyer&#x27;s Timewave Zero). McKenna ended it on 2012-12-21. Here it ends on the omega point by default, so its lows show where the formula would put times of novelty before that date: a formula, not predicted events.</p>
+    <p class="note" id="mck-events-note" data-awaiting-skeptic="true">Events McKenna linked to the wave, where the panel shows
+      them, are his own picks, chosen after the fact. Nobody registered the list in advance, so a pattern among them is not a
+      test, and nothing here is scored. The wave&rsquo;s bumps are not tested against them: that test is #20, and it has not
+      been run.</p>
+    <p class="lt-cred">Timewave theory: Terence McKenna and Dennis McKenna, <em>The Invisible Landscape</em> (1975). Number set: Kelley. Software and mathematics: Peter Meyer, <a href="https://www.fractal-timewave.com">fractal-timewave.com</a>. Sampled, not exact: 3371 log-spaced samples before 1900 (2000 per decade, out to 5475 years before the anchor), daily values at 00:00 UTC from 1900-01-01, then 1986 log-spaced samples within 64 days before the anchor (400 per decade), generated by scripts/timewave_export.py. Exact evaluation at every zoom is #16. No claim that dips line up with events: that is McKenna&#x27;s claim, and it has not been tested here.</p>
+  </section>
+
+  <section id="tables" aria-labelledby="h-tables">
+    <h2 id="h-tables">Chart notes and tables</h2>
+    <h3>Model releases from 11 labs</h3>
+<p class="note footnote">* 2026Q4 is incomplete: the snapshot&#x27;s latest entry is 2026-10-17.</p>
+    <p class="note">Epoch adds entries with a delay, so recent counts are lower bounds and recent gaps upper bounds.</p>
+<p class="table-title" id="q1q3-title">Q1–Q3 totals (non-minor releases; validated in the build against the frozen tables)</p><div class="table-wrap" role="region" aria-labelledby="q1q3-title" tabindex="0"><table class="small-table" aria-labelledby="q1q3-title"><thead><tr><th scope="col">Year</th><th scope="col">Models</th><th scope="col">Release days</th></tr></thead><tbody><tr><th scope="row">2024</th><td>76</td><td>44</td></tr><tr><th scope="row">2025</th><td>64</td><td>49</td></tr><tr><th scope="row">2026</th><td>85</td><td>68</td></tr></tbody></table></div>
+    <h4 id="h-gaps">Gaps between releases</h4>
+<p class="table-title" id="gaps-title">Median days between consecutive non-minor release days, within each lab (number of gaps in brackets)</p><div class="table-wrap" role="region" aria-labelledby="gaps-title" tabindex="0"><table class="gap-table" aria-labelledby="gaps-title"><thead><tr><th scope="col">Lab</th><th scope="col">2021</th><th scope="col">2022</th><th scope="col">2023</th><th scope="col">2024</th><th scope="col">2025</th><th scope="col">2026</th></tr></thead><tbody><tr><th scope="row">Alibaba Qwen</th><td class="muted">–</td><td class="muted">–</td><td>33 <span class="muted">(5)</span></td><td>10 <span class="muted">(11)</span></td><td>33 <span class="muted">(8)</span></td><td>18 <span class="muted">(12)</span></td></tr>
+<tr><th scope="row">Anthropic</th><td class="muted">–</td><td class="muted">–</td><td>35 <span class="muted">(3)</span></td><td>124 <span class="muted">(3)</span></td><td>65 <span class="muted">(6)</span></td><td>22.5 <span class="muted">(10)</span></td></tr>
+<tr><th scope="row">DeepSeek</th><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td><td>109 <span class="muted">(5)</span></td><td class="muted">–</td><td>312 <span class="muted">(2)</span></td></tr>
+<tr><th scope="row">Google DeepMind</th><td>110 <span class="muted">(4)</span></td><td>146 <span class="muted">(1)</span></td><td>105 <span class="muted">(4)</span></td><td>22.5 <span class="muted">(8)</span></td><td>31 <span class="muted">(10)</span></td><td>23 <span class="muted">(11)</span></td></tr>
+<tr><th scope="row">Meta</th><td>140 <span class="muted">(4)</span></td><td>50 <span class="muted">(5)</span></td><td>70.5 <span class="muted">(4)</span></td><td>65.5 <span class="muted">(6)</span></td><td>120 <span class="muted">(1)</span></td><td>35 <span class="muted">(6)</span></td></tr>
+<tr><th scope="row">MiniMax</th><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td><td>228.5 <span class="muted">(2)</span></td><td>57 <span class="muted">(3)</span></td><td>51 <span class="muted">(3)</span></td></tr>
+<tr><th scope="row">Mistral</th><td class="muted">–</td><td class="muted">–</td><td>62 <span class="muted">(1)</span></td><td>42 <span class="muted">(9)</span></td><td>29 <span class="muted">(10)</span></td><td>70.5 <span class="muted">(2)</span></td></tr>
+<tr><th scope="row">Moonshot</th><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td><td>170 <span class="muted">(3)</span></td><td>129.5 <span class="muted">(2)</span></td></tr>
+<tr><th scope="row">OpenAI</th><td class="muted">–</td><td>217 <span class="muted">(2)</span></td><td>281 <span class="muted">(2)</span></td><td>75 <span class="muted">(6)</span></td><td>21 <span class="muted">(15)</span></td><td>20 <span class="muted">(10)</span></td></tr>
+<tr><th scope="row">xAI</th><td class="muted">–</td><td class="muted">–</td><td class="muted">–</td><td>141.5 <span class="muted">(2)</span></td><td>50 <span class="muted">(7)</span></td><td>41 <span class="muted">(6)</span></td></tr>
+<tr><th scope="row">Zhipu</th><td class="muted">–</td><td class="muted">–</td><td>492 <span class="muted">(1)</span></td><td>82 <span class="muted">(3)</span></td><td>198.5 <span class="muted">(2)</span></td><td>65 <span class="muted">(5)</span></td></tr></tbody><tfoot><tr><th scope="row">Lab-equal median</th><td>125<sup>†</sup> <span class="muted">(2 labs)</span></td><td>146<sup>†</sup> <span class="muted">(3 labs)</span></td><td>70.5<sup>†</sup> <span class="muted">(7 labs)</span></td><td><strong>78.5</strong> <span class="muted">(10 labs)</span></td><td><strong>53.5</strong> <span class="muted">(10 labs)</span></td><td><strong>41</strong> <span class="muted">(11 labs)</span></td></tr></tfoot></table></div><p class="note">Lab-equal median: the median over labs of each lab's median gap that year (labs with at least one gap; number of labs in brackets). Only the bold values (2024–2026) are checked in the build against Release Tracker's frozen table. <sup>†</sup> Earlier years are not validated and rest on few labs.</p>
+    <h3>Training compute of record-setting models</h3>
+    <p class="note">Hollow points are lag-affected: dated in the most recent ~12 months, when
+      Epoch&rsquo;s compute estimates are still incomplete, so treat them as lower bounds. After 2023 the record
+      series is also censored because most frontier labs no longer disclose training compute, so all post-2023
+      records are lower bounds (<code class="path">data/compute/DEFINITION.md</code>, Amendment 3).</p>
+    <h3>arXiv submissions per month</h3>
+<p class="note footnote">* 2026-10 is partial (raw, unscaled): it counts only the papers harvested so far, with v1 dates through 2026-10-22 (matches the daily file); days after 2026-10-20 are incomplete.</p>
+    <h3>CVE records published per month</h3>
+<p class="note footnote">* 2026-10 is a pace estimate, not a count: the count for days 1–22 of the month × 31/22 (checked against the daily file).</p>
+<p class="note">Months with no row in the source file are drawn as gaps, not as zero: 1999-10, 1999-11, 1999-12, 2001-06, 2001-12.</p>
+    <h3>arXiv submissions per day (recent)</h3>
+<p class="note footnote">* 2026-10-21 to 2026-10-22 are incomplete (the file&#x27;s header gives 2026-10-20 as the last complete day).</p>
+    <p class="note">The most recent days are incomplete: a paper enters the metadata only after arXiv announces it, so
+      the last few days in the file undercount.</p>
+    <h3>CVE records published per day (recent)</h3>
+<p class="note footnote">* 2026-10-23 is partial: the snapshot ends inside that day, so it is undercounted. The monthly pace estimate uses days 1–22 only.</p>
+  </section>
+
+  <section id="chart-data" aria-labelledby="h-chart-data">
+    <h2 id="h-chart-data">Main chart: definitions and tables</h2>
+    <div id="learn-notes-body" class="learn-notes"><p>Loading&hellip;</p></div>
+    <noscript><p class="pending">The definitions and tables need JavaScript. They are published as
+      <code>data/main_chart.json</code> next to this page.</p></noscript>
+  </section>
+
+  <section id="sources" aria-labelledby="h-sources">
+    <h2 id="h-sources">Sources &amp; attribution</h2>
+    <ul class="sources">
+      <li><strong>Epoch AI</strong>, &lsquo;Data on AI models&rsquo; (<code>all_ai_models</code>, 11-lab releases;
+        <code>notable_ai_models</code>, compute),
+        <a href="https://epoch.ai/data/ai-models">https://epoch.ai/data/ai-models</a> (accessed 22 Oct 2026).
+        <a href="https://creativecommons.org/licenses/by/4.0/">CC BY 4.0</a>; filtered and labeled here.</li>
+      <li><strong>CVE&trade; records</strong>: CVE Program,
+        <a href="https://github.com/CVEProject/cvelistV5"><code>CVEProject/cvelistV5</code></a>, release
+        <code>cve_2026-10-23_0200Z</code>. Copyright &copy; 1999-2026, The MITRE Corporation. Used under the
+        <a href="https://www.cve.org/Legal/TermsOfUse">CVE Program Terms of Use</a>:
+        &ldquo;CVE Usage: MITRE hereby grants you a perpetual, worldwide, non-exclusive, no-charge, royalty-free,
+        irrevocable copyright license to reproduce, prepare derivative works of, publicly display, publicly perform,
+        sublicense, and distribute Common Vulnerabilities and Exposures (CVE&trade;). Any copy you make for such purposes
+        is authorized provided that you reproduce MITRE&rsquo;s copyright designation and this license in any such copy.&rdquo;
+        CVE is a trademark and the CVE logo is a registered trademark of The MITRE Corporation.</li>
+      <li><strong>arXiv metadata</strong> via arXiv.org OAI-PMH and
+        <a href="https://huggingface.co/datasets/librarian-bots/arxiv-metadata-snapshot"><code>librarian-bots/arxiv-metadata-snapshot</code></a>
+        (<a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> public domain). Thanks to arXiv for
+        open-access interoperability.</li>
+      <li><strong>Kurzweil&rsquo;s milestones</strong> (purple): Ray Kurzweil, <em>The Singularity Is Near</em> (2005),
+        &ldquo;Countdown to Singularity&rdquo; table (22 rows, all estimates;
+        <code>data/kurzweil/countdown_table.csv</code>), dated via 21-year conversion
+        (<code>data/kurzweil/README.md</code>; not yet reviewed by our skeptic agent).</li>
+      <li><strong>McKenna&rsquo;s timewave</strong> (own panel): timewave theory, Terence McKenna and Dennis
+        McKenna, <em>The Invisible Landscape</em> (1975). Number set: Kelley (<code>data/kelley/kelley_TIL_table2.txt</code>,
+        as implemented in Peter Meyer&rsquo;s Timewave Zero software, <code>DATA.TWZ</code>). Software and mathematics:
+        Peter Meyer, <a href="https://www.fractal-timewave.com">fractal-timewave.com</a>. Values computed by
+        <code>scripts/timewave.py</code>, sampled in <code>data/timewave/timewave_kelley.csv</code>.</li>
+      <li><strong>Original chart tested</strong>: <a href="https://x.com/geogristle/status/2105113398774211025">Geogristle
+        (@geogristle) on X</a>, 29 Sep 2026 (linked). Built from repo data; original image and headline omitted.</li>
+      <li><strong>uPlot</strong> 1.6.32 by Leon Sorokin (MIT License; <a href="vendor/uplot/LICENSE">license text</a>),
+        bundled locally.</li>
+    </ul>
+    <p class="note">Not endorsed by Epoch AI, MITRE, or arXiv. Zero external fonts, scripts, or trackers.</p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="foot-links"><a href="./">Back to the charts</a></p>
+    <h2 class="footer-title">Build</h2>
+<p>Built <time datetime="2026-10-31T03:26:22Z">2026-10-31 03:26:22 UTC</time> from commit <code>8a188bc9f588</code>. Status labels from <code class="path">results/dashboard_data.json</code>.</p><details><summary>Input files (sha256)</summary><div class="table-wrap" role="region" aria-label="Input files" tabindex="0"><table class="meta-table"><thead><tr><th scope="col">Input</th><th scope="col">Rows</th><th scope="col">sha256</th></tr></thead><tbody><tr><td><code>data/cve/monthly_total.csv</code></td><td>321</td><td><code class="sha">d92d8aaf5a1d51231b5c535e5c0228f960f15ca682802f18bd496c93c2dc048b</code></td></tr><tr><td><code>data/cve/daily_last90.csv</code></td><td>92</td><td><code class="sha">f947206ef7bb770cf4efb4be0a26e1ed77f32d464099cc6bb9a9cfb8baab2f8d</code></td></tr><tr><td><code>data/arxiv/monthly_counts.csv</code></td><td>202</td><td><code class="sha">cb386a64f6ade960a78c0d16baacc59a0475a82d27838d479f80180425b54af5</code></td></tr><tr><td><code>data/arxiv/daily_recent.csv</code></td><td>52</td><td><code class="sha">df440a35f4d3eef0d479450b8b75a1507a1a5abe379d8b4c9eae60408a78e3b7</code></td></tr><tr><td><code>data/releases/fixed_lab_releases_labeled.csv</code></td><td>497</td><td><code class="sha">a93d47f7fa9b004f621fc2a7f26effc6b3b6949df4707f5c85bc2952eabbaf49</code></td></tr><tr><td><code>data/releases/release_gaps_by_lab_year_final.csv</code></td><td>43</td><td><code class="sha">a3b117bed81f6bc9445c6679e1b8098434aef76099978399ce4917ac85b468b3</code></td></tr><tr><td><code>data/compute/records_all.csv</code></td><td>41</td><td><code class="sha">8594c4a284b96cf801df2f7f753c3c95f67963a1092be26101b5ab9af547daf3</code></td></tr><tr><td><code>results/dashboard_data.json</code></td><td>7</td><td><code class="sha">d061bec11e0958a348504ff44eb467229f34bf9871a099e5ef65e8904914ea02</code></td></tr><tr><td><code>data/kurzweil/countdown_table.csv</code></td><td>22</td><td><code class="sha">9c76cf6fb044ffc279476d3f52d72cfa2e0c8e99db31ccccb10f0f349f1c065e</code></td></tr><tr><td><code>data/curated/lists.csv</code></td><td>52</td><td><code class="sha">c5bb81833e5722bec7bde5df7ce7cdaa53841fb972511dc9fdc1f7a87e18a7e1</code></td></tr><tr><td><code>data/timewave/timewave_kelley.csv</code></td><td>46,621</td><td><code class="sha">545219c70fcc4ab9fa111f18849d5b1ba5d08be6cda52564e98cf6a7c7ccfa3a</code></td></tr><tr><td><code>data/timewave/mckenna_events.csv</code></td><td>29</td><td><code class="sha">4671ad4964d3d2a737abe9a96308efeb959aad0e9d688c324941b8c67df5ca17</code></td></tr><tr><td><code>data/timewave/mckenna_events.provenance.json</code></td><td></td><td><code class="sha">115a89e30fd471c019fc1d449b37ef59f628ea9cf797c4722395e6e427bcd7e3</code></td></tr><tr><td><code>data/cve/preregistration_2026-10.json</code></td><td>2</td><td><code class="sha">5245a3216d70bb34f86ab0f4197dfce6307f8495cda38d77ca57676095381405</code></td></tr><tr><td><code>results/part8_stdout.txt</code></td><td>11</td><td><code class="sha">2a2a7e12646af718d20ce389c8da56436c0d6fbf0c77c3421a5137550e2140a0</code></td></tr><tr><td><code>results/predictions/registry.csv</code></td><td>1,056</td><td><code class="sha">ada4cf0f92c29e5be05167ddd11c718105e9d7b4f286639839fce0fa3ec5fff9</code></td></tr><tr><td><code>results/predictions/recession.csv</code></td><td>26</td><td><code class="sha">b7a34685f70301e09831f1315024661550c60a8c9671da145413aff7ae27207c</code></td></tr><tr><td><code>results/predictions/calibrated_range.json</code></td><td></td><td><code class="sha">2ec518ade4dc285afa297563fecb3a060ba0053a8f474ae45866f06451b59beb</code></td></tr><tr><td><code>results/predictions/part8_rd_quad.json</code></td><td></td><td><code class="sha">01f940ad929454a2e050ab9710d98a2709418b62be85acdc4fe28e70ebfe40cf</code></td></tr></tbody></table></div></details>
+  </div>
+</footer>
+<script src="app.js"></script>
+<script src="learn.js"></script>
+</body>
+</html>

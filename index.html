@@ -1,0 +1,355 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:,">
+<title>Singularity Tracker</title>
+<meta name="description" content="Charts the wait between Kurzweil’s milestones and AI model releases, and the omega point (the arrival of ASI) as a weekly fitted estimate, not a forecast, with its 50% range and track record.">
+<meta name="color-scheme" content="light dark">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Singularity Tracker">
+<meta property="og:description" content="Charts the wait between Kurzweil’s milestones and AI model releases, and the omega point (the arrival of ASI) as a weekly fitted estimate, not a forecast, with its 50% range and track record.">
+<meta property="og:image" content="https://singularity.joseqc.com/share.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="The omega point card: a fitted estimate, not a forecast, with its 50% range (provisional, in-sample), updated weekly." data-awaiting-skeptic="true">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://singularity.joseqc.com/share.png">
+<meta name="twitter:image:alt" content="The omega point card: a fitted estimate, not a forecast, with its 50% range (provisional, in-sample), updated weekly." data-awaiting-skeptic="true">
+<script>
+  // Apply a stored theme before first paint. Storage may be unavailable.
+  (function () {
+    try {
+      var t = window.localStorage.getItem('st-theme');
+      if (t === 'light' || t === 'dark') document.documentElement.setAttribute('data-theme', t);
+    } catch (e) { /* ignore */ }
+    // uPlot formats numbers with navigator.language; some systems report an
+    // invalid tag (e.g. "en-US@posix"), which would stop the charts loading.
+    try { new Intl.NumberFormat(navigator.language); } catch (e) {
+      try { Object.defineProperty(navigator, 'language', { value: 'en-US', configurable: true }); } catch (e2) { /* ignore */ }
+    }
+  })();
+</script>
+<link rel="stylesheet" href="vendor/uplot/uPlot.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+  <div class="wrap header-row">
+    <h1>Singularity Tracker</h1>
+    <button id="theme-toggle" class="btn theme-toggle" type="button" aria-pressed="false" hidden>Dark mode</button>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+  <p class="ask">If the speed-up continues, when does the wait hit zero?</p>
+  <p class="ask-def"><span class="ask-lg">That date is the omega point: the technological singularity, the arrival of artificial superintelligence (ASI).</span><span class="ask-sm">Omega point = the singularity: the arrival of ASI.</span></p>
+
+  <section id="main-chart" class="mc" aria-label="Omega point and the singularity chart">
+    <section class="mc-omega" id="mc-omega" aria-labelledby="mc-omega-k" data-state="loading">
+      <div class="mc-omega-main">
+        <div class="mc-omega-top"><h2 class="mc-omega-k" id="mc-omega-k">Omega point:</h2><span class="mc-omega-for" id="mc-omega-for"></span> <span class="mc-omega-for" id="mc-omega-fitn" hidden></span></div>
+        <p class="mc-omega-date" id="mc-omega-date" aria-live="polite"></p>
+        <p class="mc-omega-range" id="mc-omega-range" data-awaiting-skeptic="true"></p>
+        <p class="mc-omega-recede" id="mc-omega-recede" data-awaiting-skeptic="true"></p>
+      </div>
+      <div class="mc-omega-side">
+        <p class="mc-omega-slide" id="mc-omega-slide"></p>
+        <p class="mc-omega-fine">A fitted estimate, not a forecast · updated weekly &middot; <a href="learn.html#omega">Learn more &rsaquo;</a></p>
+      </div>
+      <noscript><p class="mc-omega-ns">The date needs JavaScript. It is in <code>data/main_chart.json</code>.</p></noscript>
+    </section>
+    <div class="mc-hero" id="mc-hero">
+      <div class="mc-controls">
+        <button type="button" class="mc-opts-btn" id="mc-opts-btn" aria-expanded="false" data-awaiting-skeptic="true"><span class="mc-opts-t">AI models and view</span></button>
+        <div class="mc-grp mc-g-list">
+          <span class="mc-glabel">AI models</span>
+          <div class="mc-seg" role="group" aria-label="Which AI model list" id="mc-list">
+            <button type="button" data-list="v1" aria-pressed="false"></button>
+            <button type="button" data-list="v3" aria-pressed="true"></button>
+            <button type="button" data-list="rule" aria-pressed="false"></button>
+          </div>
+        </div>
+        <div class="mc-grp mc-g-view">
+          <span class="mc-glabel">View</span>
+          <div class="mc-seg" role="group" aria-label="Main chart zoom presets" id="mc-preset-hero">
+            <button type="button" data-preset="all" aria-pressed="true"><span class="mc-lg">All time</span><span class="mc-sm">All</span></button>
+            <button type="button" data-preset="ai" aria-pressed="false">AI era</button>
+            <button type="button" data-preset="y2" aria-pressed="false"><span class="mc-lg">Last 2 years</span><span class="mc-sm">2 yrs</span></button>
+            <button type="button" data-preset="d7" aria-pressed="false">7 days</button>
+          </div>
+          <span class="mc-zgrp">
+            <button type="button" class="mc-pill mc-sq" id="mc-hero-out" aria-label="Zoom out the main chart">&minus;</button>
+            <button type="button" class="mc-pill mc-sq" id="mc-hero-in" aria-label="Zoom in the main chart">+</button>
+            <button type="button" class="mc-pill" id="mc-hero-reset">Reset</button>
+          </span>
+        </div>
+      </div>
+      <p class="mc-listnote" id="mc-listnote" hidden></p>
+      <div class="mc-box" id="mc-box-hero">
+        <canvas id="mc-cv-hero" tabindex="0" role="img" data-awaiting-skeptic="true" aria-label="Log-log chart: wait until the next event against time before today. Purple rings are Kurzweil's milestones from his published 2005 table, all estimates; cyan points are the AI models of the selected list; today pulses at the end of the wait so far since the last model. A best-fit curve runs up to today and goes on, dashed, down to the omega point, where the wait reaches zero, with the 50% range shaded around it; that date, given in the legend, is a fitted estimate, updated weekly. The omega point comes from adding Kurzweil's milestones: the AI models alone give no near-term date. Click the chart, then scroll to zoom; drag to select; double-click resets; keys plus, minus, left, right and 0."></canvas>
+        <canvas class="mc-dyn" id="mc-cv-hero-dyn" aria-hidden="true"></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+        <noscript><p class="mc-noscript">The main chart needs JavaScript. Its data are published as
+          <code>data/main_chart.json</code> next to this page.</p></noscript>
+      </div>
+      <p class="mc-capline" id="mc-hero-cap" hidden></p>
+      <p class="visually-hidden" id="mc-hero-live" aria-live="polite"></p>
+      <div class="mc-legend" id="mc-legend-hero"></div>
+      <p class="mc-verdict-line" hidden title="Status label of Curated release lists (v1, v3, v3b, v4), verbatim: rung R (Retired), approved in #25."><span class="mc-verdict-k">Verdict</span> <span id="mc-headline" class="mc-verdict">artifact of the chart&#x27;s construction; fails the held-out test; AI-only fit gives no near-term date</span> <a href="learn.html#status">Learn more &rsaquo;</a></p>
+      <p class="mc-credit" hidden>Tests <a href="https://x.com/geogristle/status/2105113398774211025">@geogristle</a>&rsquo;s method (X, 29 Sep 2026), redrawn from repo data without copying.</p>
+      <p class="mc-hint"><span class="mc-lg">Click, then scroll to zoom &middot; double-click resets</span><span class="mc-sm">Pinch to zoom &middot; double-tap resets</span> <button type="button" class="mc-pill mc-fsbtn" id="mc-hero-fs" aria-pressed="false" hidden>Full screen</button></p>
+    </div>
+
+    <section class="mc-panel mc-deep" id="mc-deep" aria-label="Timeline strip" data-awaiting-skeptic="true">
+      <p class="mc-deepcap"><b>Timeline</b> <span class="mc-deephint">&middot; tap or drag to move the chart above</span></p>
+      <div class="mc-box mc-deep-box" id="mc-box-deep">
+        <canvas id="mc-cv-deep" tabindex="0" role="img" aria-label="Timeline strip: Kurzweil's milestones as hollow rings at their estimated dates on a log scale of time before today, from the oldest to today at the right edge, with a box showing the range of the main chart above. Click or drag to move that chart; arrow keys move it, plus and minus zoom it."></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+      </div>
+    </section>
+
+    <section class="mc-panel mc-second" id="mc-mck" aria-labelledby="mc-mck-label">
+      <p class="mc-mcap"><b id="mc-mck-label">McKenna&#x27;s timewave (a formula, not data).</b> <a href="learn.html#timewave">Learn more &rsaquo;</a></p>
+      <div class="mc-box" id="mc-box-mck">
+        <canvas id="mc-cv-mck" tabindex="0" role="img" aria-label="The Timewave Zero curve, drawn by Terence McKenna's method, with its end date given in the legend." data-awaiting-skeptic="true"></canvas>
+        <canvas class="mc-dyn" id="mc-cv-mck-dyn" aria-hidden="true"></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+      </div>
+      <div class="mc-legend" id="mc-legend-mck" data-awaiting-skeptic="true" hidden></div>
+      <div class="mc-controls">
+        <span class="mc-chip" id="mc-mck-link"></span>
+        <div class="mc-grp">
+          <span class="mc-glabel">View</span>
+          <div class="mc-seg" role="group" aria-label="Timewave view" id="mc-mck-views">
+            <button type="button" data-view="next" aria-pressed="false" data-awaiting-skeptic="true">Next months</button>
+            <button type="button" data-view="100" aria-pressed="false" data-awaiting-skeptic="true">Last 100 years</button>
+            <button type="button" data-view="5000" aria-pressed="false" data-awaiting-skeptic="true">Last 5,000 years</button>
+          </div>
+        </div>
+        <div class="mc-grp">
+          <span class="mc-glabel">Ends on</span>
+          <div class="mc-seg" role="group" aria-label="Timewave zero date" id="mc-anchor">
+            <button type="button" data-anchor="omega" aria-pressed="true">Omega point</button>
+            <button type="button" data-anchor="mckenna" aria-pressed="false">McKenna&rsquo;s 2012</button>
+          </div>
+        </div>
+        <div class="mc-grp">
+          <span class="mc-glabel">Scale</span>
+          <div class="mc-seg" role="group" aria-label="Timewave scale" id="mc-scale">
+            <button type="button" data-scale="lin" aria-pressed="true">Linear</button>
+            <button type="button" data-scale="log" aria-pressed="false">Log</button>
+          </div>
+          <span class="mc-zgrp">
+            <button type="button" class="mc-pill mc-sq" id="mc-mck-out" aria-label="Zoom out the timewave panel">&minus;</button>
+            <button type="button" class="mc-pill mc-sq" id="mc-mck-in" aria-label="Zoom in the timewave panel">+</button>
+            <button type="button" class="mc-pill" id="mc-mck-reset">Reset</button>
+            <button type="button" class="mc-pill" id="mc-mck-fs" aria-pressed="false">Full screen</button>
+          </span>
+        </div>
+      </div>
+      <p class="mc-lede mc-manchor" id="mc-mck-anchor" aria-live="polite" data-awaiting-skeptic="true"></p>
+      <p class="mc-capline" id="mc-mck-span" hidden></p>
+      <p class="mc-hint"><span class="mc-lg">Click, then scroll to zoom &middot; drag to move &middot; double-click resets</span><span class="mc-sm">Pinch to zoom &middot; drag sideways to move &middot; double-tap resets</span></p>
+    </section>
+
+    <section class="mc-panel" id="mc-steps" aria-labelledby="mc-steps-title" data-awaiting-skeptic="true">
+      <h2 class="mc-sec" id="mc-steps-title">The wait between events, <span>step by step</span></h2>
+      <p class="mc-lede">Each step shows the wait from one event to the next on its list. <b>Lower steps = shorter waits.</b><span id="mc-steps-after"> Zoom in past today to see the omega point (est.) and its 50% range (provisional).</span></p>
+      <div class="mc-controls">
+        <div class="mc-seg mc-sers" role="group" aria-label="Lists shown as steps" id="mc-steps-series">
+          <button type="button" data-ser="kurz" aria-pressed="true"><i class="k"></i><span class="t">Kurzweil&rsquo;s milestones</span> <span class="mc-dim">(est.)</span></button>
+          <button type="button" data-ser="rule" aria-pressed="true"><i class="r"></i><span class="t">Every model release</span> <span class="mc-dim">by rule</span></button>
+          <button type="button" data-ser="pick" aria-pressed="true"><i class="p"></i><span class="t">Hand-picked models</span></button>
+        </div>
+        <div class="mc-grp">
+          <span class="mc-glabel">View</span>
+          <div class="mc-seg" role="group" aria-label="Steps chart zoom presets" id="mc-preset-steps">
+            <button type="button" data-preset="all" aria-pressed="true"><span class="mc-lg">All time</span><span class="mc-sm">All</span></button>
+            <button type="button" data-preset="s1900" aria-pressed="false">Since 1900</button>
+            <button type="button" data-preset="y2" aria-pressed="false"><span class="mc-lg">Last 2 years</span><span class="mc-sm">2 yrs</span></button>
+            <button type="button" data-preset="d7" aria-pressed="false">7 days</button>
+          </div>
+          <span class="mc-zgrp">
+            <button type="button" class="mc-pill mc-sq" id="mc-steps-out" aria-label="Zoom out the steps chart">&minus;</button>
+            <button type="button" class="mc-pill mc-sq" id="mc-steps-in" aria-label="Zoom in the steps chart">+</button>
+            <button type="button" class="mc-pill" id="mc-steps-reset">Reset</button>
+          </span>
+        </div>
+      </div>
+      <div class="mc-box" id="mc-box-steps">
+        <canvas id="mc-cv-steps" tabindex="0" role="img" aria-label="Steps chart: the wait until the next event as a staircase on a log scale of time before today. Purple steps are Kurzweil's milestones (his estimates), cyan steps every model release from the AI labs (by rule), coral steps the hand-picked models of the list chosen above (the default list while it shows every release); hollow marks are estimates or upper bounds. Zoomed in, after today: the registered test windows and, when the track record is shown, the 50% range as a band and the omega point. A drop where the chart moves from one list to another comes from switching lists, not from faster progress, and Kurzweil chose his milestones, so his list shapes the long-run line. Click the chart, then scroll to zoom; drag to select; double-click resets."></canvas>
+        <canvas class="mc-dyn" id="mc-cv-steps-dyn" aria-hidden="true"></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+      </div>
+      <p class="mc-capline" id="mc-steps-cap" hidden></p>
+      <p class="mc-hint"><span class="mc-lg">Click a list to show or hide it &middot; click the chart, then scroll to zoom</span><span class="mc-sm">Tap a list to show or hide it &middot; pinch to zoom</span></p>
+    </section>
+
+    <section class="mc-panel mc-track" id="mc-track" aria-labelledby="mc-track-title">
+      <h2 class="mc-sec mc-track-h" id="mc-track-title">Past estimates <span class="mc-track-k">&middot; how the date has moved</span></h2>
+      <p class="mc-track-caption" id="mc-track-caption">Fitted estimates, updated weekly</p>
+      <p class="mc-lede mc-track-lede">Open circle = a date that has already passed. 228 of these 230 estimates are backtests: today&#x27;s method and list rerun on the data up to each refit day, not dates the site showed at the time. 2 are live refits. <a href="learn.html#omega">Learn more &rsaquo;</a></p>
+      <div class="mc-controls">
+        <div class="mc-grp">
+          <span class="mc-glabel">Updated</span>
+          <div class="mc-seg" role="group" aria-label="Which list and refit method" id="mc-track-group"><button type="button" data-list="v1" data-method="calendar" aria-pressed="true"><span class="mc-lg">11 &middot; weekly</span><span class="mc-sm">11 &middot; weekly</span></button><button type="button" data-list="v1" data-method="release_cut" aria-pressed="false"><span class="mc-lg">11 &middot; after each release</span><span class="mc-sm">11 &middot; per release</span></button><button type="button" data-list="v3" data-method="calendar" aria-pressed="false"><span class="mc-lg">41 &middot; weekly</span><span class="mc-sm">41 &middot; weekly</span></button><button type="button" data-list="v3" data-method="release_cut" aria-pressed="false"><span class="mc-lg">41 &middot; after each release</span><span class="mc-sm">41 &middot; per release</span></button></div>
+          <button type="button" class="mc-pill mc-sq" id="mc-track-out" aria-label="Zoom out the track record">&minus;</button>
+          <button type="button" class="mc-pill mc-sq" id="mc-track-in" aria-label="Zoom in the track record">+</button>
+          <button type="button" class="mc-pill" id="mc-track-reset">Reset</button>
+        </div>
+      </div>
+      <div class="mc-box mc-track-box" id="mc-box-track">
+        <canvas id="mc-cv-track" tabindex="0" role="img" data-awaiting-skeptic="true" aria-label="Track record: one row per refit of the same fixed method on the selected hand-picked list, from the refit day to the date the fit named then, with the 95% range it claimed at that refit (a past claim); hollow points have passed (failed forecasts). Below, the claimed half-width against how far the date moved by the next refit, both as a share of the time the fit said remained."></canvas>
+        <canvas class="mc-dyn" id="mc-cv-track-dyn" aria-hidden="true"></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+      </div>
+      <details class="mc-key">
+        <summary>Key</summary>
+        <div class="mc-legend" id="mc-legend-track" data-awaiting-skeptic="true"></div>
+      </details>
+    </section>
+
+    <section class="mc-panel" id="mc-cal" aria-labelledby="mc-cal-title">
+      <h2 class="mc-sec" id="mc-cal-title"><span id="mc-cal-title-s">Time between a lab&rsquo;s new models</span></h2>
+      <p class="mc-lede" id="mc-cal-lede"></p>
+      <div class="mc-controls">
+        <div class="mc-grp">
+          <span class="mc-glabel">Pace</span>
+          <div class="mc-seg" role="group" aria-label="Pace measure" id="mc-mode">
+            <button type="button" data-mode="per_lab" aria-pressed="true"><span class="mc-lg">Per lab</span><span class="mc-sm">Per lab</span></button>
+            <button type="button" data-mode="pooled" aria-pressed="false"><span class="mc-lg">All labs combined</span><span class="mc-sm">Combined</span></button>
+          </div>
+        </div>
+        <div class="mc-grp">
+          <span class="mc-glabel">View</span>
+          <div class="mc-seg" role="group" aria-label="Calendar zoom presets" id="mc-preset-cal">
+            <button type="button" data-preset="d7" aria-pressed="false">7 days</button>
+            <button type="button" data-preset="y2" aria-pressed="false"><span class="mc-lg">2 years</span><span class="mc-sm">2 yrs</span></button>
+            <button type="button" data-preset="ai" aria-pressed="true">AI era</button>
+            <button type="button" data-preset="all" aria-pressed="false"><span class="mc-lg">Since 1900</span><span class="mc-sm">1900</span></button>
+          </div>
+          <span class="mc-zgrp">
+            <button type="button" class="mc-pill mc-sq" id="mc-cal-out" aria-label="Zoom out the calendar view">&minus;</button>
+            <button type="button" class="mc-pill mc-sq" id="mc-cal-in" aria-label="Zoom in the calendar view">+</button>
+            <button type="button" class="mc-pill" id="mc-cal-reset">Reset</button>
+          </span>
+        </div>
+      </div>
+      <p class="mc-axisnote" id="mc-cal-axisnote"></p>
+      <div class="mc-box" id="mc-box-cal">
+        <canvas id="mc-cv-cal" tabindex="0" role="img" aria-label="Calendar view: the wait between new AI models from 11 labs, averaged over 90 days, with placeholder names on the biggest drops, lab entries under the axis, today pulsing on the time axis, and after today only the two registered CVE test windows."></canvas>
+        <canvas class="mc-dyn" id="mc-cv-cal-dyn" aria-hidden="true"></canvas>
+        <div class="mc-tip" hidden></div><div class="mc-toast" aria-hidden="true"></div>
+      </div>
+      <p class="mc-aftertoday">After today: the omega point&#x27;s 50% range (provisional) and two registered tests. <a href="learn.html#tests">Learn more &rsaquo;</a></p>
+      <details class="mc-key">
+        <summary>Key</summary>
+        <div class="mc-legend" id="mc-legend-cal"></div>
+      </details>
+    </section>
+  </section>
+
+  <section id="data" aria-labelledby="h-data">
+    <h2 id="h-data">Supporting data</h2>
+    <p class="note data-line">Observed counts, not fitted. Drag to zoom; double-click resets.</p>
+    <details class="howto-more">
+      <summary>Zoom &amp; pan</summary>
+      <p><strong>Zooming:</strong> drag across a chart to zoom to that span; use the buttons; or focus a chart
+      (click it or Tab to it) and press <kbd>+</kbd> / <kbd>&minus;</kbd> to zoom, <kbd>&larr;</kbd> / <kbd>&rarr;</kbd>
+      to pan and <kbd>0</kbd> to reset. Once a chart is focused the mouse wheel zooms too (<kbd>Ctrl</kbd> + wheel or a
+      trackpad pinch works at any time). On touch screens, pinch to zoom, swipe sideways to pan and tap a point for
+      details. The narrowest view is 7 days. Double-click resets.</p>
+    </details>
+    <noscript><p class="pending">The charts need JavaScript. The data are in <code>data/</code>.</p></noscript>
+
+    <article class="panel" id="panel-releases" aria-labelledby="h-releases">
+      <h3 id="h-releases">Model releases from 11 labs</h3>
+
+      <p class="note caveat">* 2026Q4 is incomplete (data to 2026-10-17). New releases are still being added, so recent counts may rise.</p>
+      <div class="chart-mount" data-chart="releases"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+<p class="verdict"><span class="verdict-k">Verdict</span> <a class="rung" href="learn.html#status" title="Rung U, Undetermined. See Series status." aria-label="Rung U, Undetermined. See Series status.">U</a> <span class="verdict-series">11-lab release rate (rule-defined):</span> <span class="verdict-label">Q1-Q3 2026 up 12% on 2024 by models, 55% by release days; whether this is acceleration depends on the counting rule, and 2026 is a lower bound.</span> <span class="verdict-power">(finite date not detectable by this test)</span></p>
+        <p class="panel-sub">Non-minor releases from the fixed list of 11 labs (Epoch AI data, rule-defined; fine-tunes,
+        dated snapshots and previews are minor and excluded). Top: counts per quarter, by models and by release days
+        (same-day releases from one lab merged). Bottom: every release, one row per lab. Tables:
+        <a href="learn.html#tables">Learn more &rsaquo;</a></p>
+      </details>
+    </article>
+    <article class="panel" id="panel-compute" aria-labelledby="h-compute">
+      <h3 id="h-compute">Computing power to train record-setting AI models</h3>
+
+      <p class="note caveat">Hollow points are recent or undisclosed records: the true compute may be higher.</p>
+      <div class="chart-mount" data-chart="compute"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+<p class="verdict"><span class="verdict-k">Verdict</span> <a class="rung" href="learn.html#status" title="Rung 2, Exponential. See Series status." aria-label="Rung 2, Exponential. See Series status.">2</a> <span class="verdict-series">Frontier training compute (record-setters):</span> <span class="verdict-label">fast exponential (~5-6 month doubling), not accelerating, no credible finite date; recent-year counts a lower bound due to Epoch lag</span> <span class="verdict-power">(power under R-d: pending #11)</span></p>
+        <p class="panel-sub">Each point is a model whose training compute exceeded every earlier model&rsquo;s (Epoch AI
+        notable models). Log scale, FLOP.</p>
+      </details>
+    </article>
+    <article class="panel" id="panel-arxiv-monthly" aria-labelledby="h-arxiv-monthly">
+      <h3 id="h-arxiv-monthly">New AI and computer-science papers per month (arXiv)</h3>
+
+      <p class="note caveat">* 2026-10 is a partial month (not scaled up).</p>
+      <div class="chart-mount" data-chart="arxiv_monthly"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+<p class="verdict"><span class="verdict-k">Verdict</span> <a class="rung" href="learn.html#status" title="Rung 2, Exponential. See Series status." aria-label="Rung 2, Exponential. See Series status.">2</a> <span class="verdict-series">arXiv cs.AI / cs.LG submissions:</span> <span class="verdict-label">growing fast (~40-55%/yr), not accelerating once relabeling is accounted for, no credible finite date</span> <span class="verdict-power">(power under R-d: pending #11)</span></p>
+        <p class="panel-sub">New papers by version-1 submission month, UTC. Log scale. &ldquo;Primary&rdquo; counts a paper
+        by its main category; &ldquo;any listing&rdquo; includes cross-lists. All CS is the reporting-volume control.</p>
+      </details>
+    </article>
+    <article class="panel" id="panel-cve-monthly" aria-labelledby="h-cve-monthly">
+      <h3 id="h-cve-monthly">Reported software security flaws per month (CVE)</h3>
+
+      <p class="note caveat">* 2026-10 is estimated from its first 22 days. Missing months are gaps, not zeros.</p>
+      <div class="chart-mount" data-chart="cve_monthly"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+<p class="verdict"><span class="verdict-k">Verdict</span> <a class="rung" href="learn.html#status" title="Rung 3, Super-exponential with no credible finite date. See Series status." aria-label="Rung 3, Super-exponential with no credible finite date. See Series status.">3</a> <span class="verdict-series">CVE records published per month:</span> <span class="verdict-label">accelerating, no credible finite date</span> <span class="verdict-power">(power under R-d: pending #11)</span></p>
+        <p class="panel-sub">Published CVE records (rejected records excluded) by publication month, UTC. Log scale.
+        &ldquo;Excluding 7 bulk assigners&rdquo; drops Linux, VulnCheck, GitHub_M, VulDB, Patchstack, Wordfence and
+        WPScan; &ldquo;excluding top 10&rdquo; drops the 10 largest recent assigners (CNAs).</p>
+      </details>
+    </article>
+    <article class="panel" id="panel-arxiv-daily" aria-labelledby="h-arxiv-daily">
+      <h3 id="h-arxiv-daily">New AI and computer-science papers per day (arXiv, recent)</h3>
+
+      <p class="note caveat">* 2026-10-21 to 2026-10-22 are incomplete: arXiv has not announced all papers for those days yet.</p>
+      <div class="chart-mount" data-chart="arxiv_daily"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+        <p class="panel-sub">Same categories, by version-1 submission day, UTC. Linear scale.</p>
+      </details>
+    </article>
+    <article class="panel" id="panel-cve-daily" aria-labelledby="h-cve-daily">
+      <h3 id="h-cve-daily">Reported software security flaws per day (CVE, recent)</h3>
+
+      <p class="note caveat">* 2026-10-23 is partial (the data ends mid-day).</p>
+      <div class="chart-mount" data-chart="cve_daily"></div>
+      <details class="panel-about">
+        <summary>About chart</summary>
+        <p class="panel-sub">Daily count by publication date, UTC, for roughly the last three months of the snapshot.
+        Linear scale. The most recent day in the snapshot may be incomplete.</p>
+      </details>
+    </article>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="wrap">
+    <p class="foot-links"><a href="learn.html">Learn more</a> &middot; <a href="learn.html#sources">Sources</a></p>
+    <p class="foot-credit">Data: Epoch AI (CC BY 4.0) &middot; CVE Program &middot; arXiv &middot; Kurzweil 2005 &middot; McKenna/Meyer timewave &middot; original chart by <a href="https://x.com/geogristle/status/2105113398774211025">@geogristle</a></p>
+  </div>
+</footer>
+<script src="main_chart.js"></script>
+<script src="vendor/uplot/uPlot.iife.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
